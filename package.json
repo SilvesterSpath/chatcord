@@ -1,0 +1,11 @@
+{
+  "name": "chatcord",
+  "version": "1.0.0",
+  "description": "Chat app with WebSocket",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "SilvesterSpath",
+  "license": "ISC"
+}
