@@ -20,6 +20,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Run when client connects
 io.on('connection', (socket) => {
   console.log('New websocket connection..');
+
+  socket.emit('message', 'Welcome to chatcord!');
 });
 
 // Run server
