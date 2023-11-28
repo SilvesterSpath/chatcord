@@ -35,6 +35,7 @@ io.on('connection', (socket) => {
   // Runs when client sends a message
   socket.on('chatMessage', (msg) => {
     console.log(msg);
+    io.emit('message', msg);
   });
 });
 
