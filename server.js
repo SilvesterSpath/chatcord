@@ -31,6 +31,11 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     io.emit('message', 'A user has left the chat!');
   });
+
+  // Runs when client sends a message
+  socket.on('chatMessage', (msg) => {
+    console.log(msg);
+  });
 });
 
 // Run server
