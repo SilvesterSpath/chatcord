@@ -21,7 +21,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 io.on('connection', (socket) => {
   console.log('New websocket connection..');
 
+  // client side welcome message
   socket.emit('message', 'Welcome to chatcord!');
+
+  // Broadcast when a use connects, except who connected
+  socket.broadcast.emit('message', 'A user has joined the chat!');
+
+  // Runs when client disconnects
+  socket.on('disconnect', () => {
+    io.emit('message', 'A user has left the chat!');
+  });
 });
 
 // Run server
