@@ -1,6 +1,20 @@
 const chatForm = document.getElementById('chat-form');
 
+// Get username and room from URL
+const { username, room } = Qs.parse(location.search, {
+  ignoreQueryPrefix: true,
+  parseArrays: false,
+  delimiter: '&',
+  strictNullHandling: true,
+  allowDots: true,
+});
+
+console.log(username, room);
+
 const socket = io();
+
+// Join chatroom
+socket.emit('joinRoom', { username, room });
 
 // Join chatroom (this message will be in the browser's console too)
 // Message from server
@@ -21,7 +35,11 @@ chatForm.addEventListener('submit', (e) => {
   const msg = e.target.elements.msg.value;
 
   // Emitting message to server
-  socket.emit('chatMessage', msg);
+  socket.emit('chatMessage', {
+    username,
+    room,
+    text: msg,
+  });
 
   // Clear input
   e.target.elements.msg.value = '';

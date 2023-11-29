@@ -18,32 +18,40 @@ app.use(bodyParser.json());
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
 
+const botName = 'CharCord Bot';
+
 // Run when client connects
 io.on('connection', (socket) => {
   console.log('A client connected');
 
-  // client side welcome message
-  socket.emit('message', formatMessage('CharCord Bot', 'Welcome to the chat!'));
-
-  // Broadcast when a use connects, except who connected
-  socket.broadcast.emit(
-    'message',
-    formatMessage('CharCord Bot', 'A user has joined the chat!')
-  );
-
-  // Runs when client disconnects
-  socket.on('disconnect', () => {
-    io.emit(
+  // Join chatroom
+  socket.on('joinRoom', ({ username, room }) => {
+    // client side welcome message
+    socket.emit(
       'message',
-      formatMessage('CharCord Bot', 'A user has left the chat!')
+      formatMessage(botName, `${username} welcome to the ${room} chat!`)
     );
-    console.log('Client disconnected');
+
+    // Broadcast when a user connects, except who connected
+    socket.broadcast.emit(
+      'message',
+      formatMessage(botName, `${username} has joined the ${room} chat!`)
+    );
+
+    // Runs when client disconnects
+    socket.on('disconnect', () => {
+      io.emit(
+        'message',
+        formatMessage(botName, `${username} has left the ${room} chat!`)
+      );
+      console.log('Client disconnected');
+    });
   });
 
   // Runs when client sends a message
   socket.on('chatMessage', (msg) => {
     console.log(msg);
-    io.emit('message', msg);
+    io.emit('message', formatMessage(msg.username, msg.text));
   });
 });
 
