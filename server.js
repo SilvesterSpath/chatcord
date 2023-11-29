@@ -65,6 +65,7 @@ io.on('connection', (socket) => {
   // Runs when client disconnects
   socket.on('disconnect', () => {
     const user = userLeave(socket.id);
+    const users = getUsersInRoom(user?.room);
     io.emit(
       'message',
       formatMessage(
@@ -72,6 +73,13 @@ io.on('connection', (socket) => {
         `${user?.username} has left the ${user?.room} chat!`
       )
     );
+
+    // Send users and room info
+    io.to(user?.room).emit('roomUsers', {
+      users: getUsersInRoom(user?.room),
+      room: user?.room,
+    });
+    console.log(users ?? 'No users');
     console.log('Client disconnected');
   });
 });
