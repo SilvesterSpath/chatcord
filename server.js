@@ -5,6 +5,12 @@ const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
 const formatMessage = require('./utils/messages');
+const {
+  userJoin,
+  getCurrentUser,
+  getUsersInRoom,
+  userLeave,
+} = require('./utils/users');
 
 dotenv.config({ path: './config/.env' });
 
@@ -26,6 +32,14 @@ io.on('connection', (socket) => {
 
   // Join chatroom
   socket.on('joinRoom', ({ username, room }) => {
+    const user = userJoin(socket.id, username, room);
+
+    const users = getUsersInRoom(user.room);
+    console.log(users);
+
+    // Join room
+    socket.join(user.room);
+
     // client side welcome message
     socket.emit(
       'message',
@@ -33,25 +47,31 @@ io.on('connection', (socket) => {
     );
 
     // Broadcast when a user connects, except who connected
-    socket.broadcast.emit(
-      'message',
-      formatMessage(botName, `${username} has joined the ${room} chat!`)
-    );
-
-    // Runs when client disconnects
-    socket.on('disconnect', () => {
-      io.emit(
+    socket.broadcast
+      .to(user.room)
+      .emit(
         'message',
-        formatMessage(botName, `${username} has left the ${room} chat!`)
+        formatMessage(botName, `${username} has joined the ${room} chat!`)
       );
-      console.log('Client disconnected');
-    });
   });
 
   // Runs when client sends a message
   socket.on('chatMessage', (msg) => {
     console.log(msg);
     io.emit('message', formatMessage(msg.username, msg.text));
+  });
+
+  // Runs when client disconnects
+  socket.on('disconnect', () => {
+    const user = userLeave(socket.id);
+    io.emit(
+      'message',
+      formatMessage(
+        botName,
+        `${user?.username} has left the ${user?.room} chat!`
+      )
+    );
+    console.log('Client disconnected');
   });
 });
 
