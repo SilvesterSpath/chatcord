@@ -34,12 +34,12 @@ function outputMessage(message) {
   div.classList.add('message');
   const p = document.createElement('p');
   p.classList.add('meta');
-  p.innerText = 'Silvester';
-  p.innerHTML += `<span> 10:11</span>`;
+  p.innerText = message.username;
+  p.innerHTML += `<span> ${message.time}</span>`;
   div.appendChild(p);
   const p2 = document.createElement('p');
   p2.classList.add('text');
-  p2.innerText = message;
+  p2.innerText = message.text;
   div.appendChild(p2);
   document.querySelector('.chat-messages').appendChild(div);
 }

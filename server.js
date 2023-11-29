@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
+const formatMessage = require('./utils/messages');
 
 dotenv.config({ path: './config/.env' });
 
@@ -19,17 +20,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Run when client connects
 io.on('connection', (socket) => {
-  console.log('New websocket connection..');
+  console.log('A client connected');
 
   // client side welcome message
-  socket.emit('message', 'Welcome to chatcord!');
+  socket.emit('message', formatMessage('CharCord Bot', 'Welcome to the chat!'));
 
   // Broadcast when a use connects, except who connected
-  socket.broadcast.emit('message', 'A user has joined the chat!');
+  socket.broadcast.emit(
+    'message',
+    formatMessage('CharCord Bot', 'A user has joined the chat!')
+  );
 
   // Runs when client disconnects
   socket.on('disconnect', () => {
-    io.emit('message', 'A user has left the chat!');
+    io.emit(
+      'message',
+      formatMessage('CharCord Bot', 'A user has left the chat!')
+    );
+    console.log('Client disconnected');
   });
 
   // Runs when client sends a message
