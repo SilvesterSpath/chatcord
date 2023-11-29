@@ -5,7 +5,12 @@ const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
 const formatMessage = require('./utils/messages');
-const { userJoin, getUsersInRoom, userLeave } = require('./utils/users');
+const {
+  userJoin,
+  getUsersInRoom,
+  userLeave,
+  getCurrentUser,
+} = require('./utils/users');
 
 dotenv.config({ path: './config/.env' });
 
@@ -28,9 +33,6 @@ io.on('connection', (socket) => {
   // Join chatroom
   socket.on('joinRoom', ({ username, room }) => {
     const user = userJoin(socket.id, username, room);
-
-    const users = getUsersInRoom(user.room);
-    console.log(users);
 
     // Join room
     socket.join(user.room);
@@ -58,8 +60,8 @@ io.on('connection', (socket) => {
 
   // Runs when client sends a message
   socket.on('chatMessage', (msg) => {
-    console.log(msg);
-    io.emit('message', formatMessage(msg.username, msg.text));
+    const user = getCurrentUser(socket.id);
+    io.to(user.room).emit('message', formatMessage(msg.username, msg.text));
   });
 
   // Runs when client disconnects
