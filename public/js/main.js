@@ -19,12 +19,17 @@ socket.emit('joinRoom', { username, room });
 // Join chatroom (this message will be in the browser's console too)
 // Message from server
 socket.on('message', (message) => {
-  console.log(message);
   outputMessage(message);
 
   // Scroll down
   const objDiv = document.querySelector('.chat-messages');
   objDiv.scrollTop = objDiv.scrollHeight;
+});
+
+// User and room info
+socket.on('roomUsers', ({ users, room }) => {
+  console.log(users, room);
+  outputUsers(users);
 });
 
 // Message submit
@@ -60,4 +65,18 @@ function outputMessage(message) {
   p2.innerText = message.text;
   div.appendChild(p2);
   document.querySelector('.chat-messages').appendChild(div);
+}
+
+// Output users
+function outputUsers(users) {
+  const userList = document.getElementById('users');
+  const roomName = document.getElementById('room-name');
+
+  roomName.innerText = users[0].room;
+
+  users.forEach((user) => {
+    const li = document.createElement('li');
+    li.textContent = user.username;
+    userList.appendChild(li);
+  });
 }

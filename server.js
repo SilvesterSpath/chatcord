@@ -5,12 +5,7 @@ const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
 const formatMessage = require('./utils/messages');
-const {
-  userJoin,
-  getCurrentUser,
-  getUsersInRoom,
-  userLeave,
-} = require('./utils/users');
+const { userJoin, getUsersInRoom, userLeave } = require('./utils/users');
 
 dotenv.config({ path: './config/.env' });
 
@@ -53,6 +48,12 @@ io.on('connection', (socket) => {
         'message',
         formatMessage(botName, `${username} has joined the ${room} chat!`)
       );
+
+    // Send users and room info
+    io.to(user.room).emit('roomUsers', {
+      users: getUsersInRoom(user.room),
+      room: user.room,
+    });
   });
 
   // Runs when client sends a message
