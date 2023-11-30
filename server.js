@@ -68,7 +68,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     const user = userLeave(socket.id);
     const users = getUsersInRoom(user?.room);
-    io.emit(
+    io.to(user?.room).emit(
       'message',
       formatMessage(
         botName,
