@@ -11,6 +11,7 @@ const {
   userLeave,
   getCurrentUser,
 } = require('./utils/users');
+const connectDB = require('./config/db');
 
 dotenv.config({ path: './config/.env' });
 
@@ -20,6 +21,9 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 app.use(bodyParser.json());
+
+// initialize mongoDB
+connectDB();
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
