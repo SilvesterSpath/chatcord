@@ -11,7 +11,7 @@ const {
   userLeave,
   getCurrentUser,
 } = require('./utils/users');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 
 dotenv.config({ path: './config/.env' });
 
@@ -23,7 +23,7 @@ const io = socketio(server);
 app.use(bodyParser.json());
 
 // initialize mongoDB
-connectDB();
+const client = connectDB();
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
@@ -63,7 +63,28 @@ io.on('connection', (socket) => {
   });
 
   // Runs when client sends a message
-  socket.on('chatMessage', (msg) => {
+  socket.on('chatMessage', async (msg) => {
+    // Msg contains data emitted from client
+    const { username, room, text } = msg;
+
+    try {
+      // Insert message to MongoDB
+      /*       await messagesCollection.insertOne({
+        username,
+        room,
+        text,
+        createdAt: new Date(),
+      }); */
+      (await client).collection('messages').insertOne({
+        username,
+        room,
+        text,
+        createdAt: new Date(),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
     const user = getCurrentUser(socket.id);
     io.to(user.room).emit('message', formatMessage(msg.username, msg.text));
   });

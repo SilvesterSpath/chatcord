@@ -13,10 +13,12 @@ async function connectDB() {
     await client.db('notes').command({ ping: 1 });
     console.log('Connected successfully to database');
   } catch (error) {
-    console.error(err);
+    console.error(error);
   }
 
   return client.db('notes');
 }
 
-module.exports = connectDB;
+module.exports = {
+  connectDB,
+};
