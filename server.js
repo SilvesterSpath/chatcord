@@ -65,7 +65,7 @@ io.on('connection', (socket) => {
   // Runs when client sends a message
   socket.on('chatMessage', async (msg) => {
     // Msg contains data emitted from client
-    const { username, room, text } = msg;
+    const { username, room, text } = msg ? msg : {};
 
     try {
       // Insert message to MongoDB
@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
     }
 
     const user = getCurrentUser(socket.id);
-    io.to(user.room).emit('message', formatMessage(msg.username, msg.text));
+    io.to(user.room).emit('message', formatMessage(msg?.username, msg?.text));
   });
 
   // Runs when client disconnects
