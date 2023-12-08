@@ -24,7 +24,7 @@ const insertMessage = async (client, username, room, text) => {
       username,
       room,
       text,
-      time: moment().format('h:mm a'),
+      time: moment().format('YYYY-MM-DD h:mm a'),
     });
   } catch (error) {
     console.error(error);
