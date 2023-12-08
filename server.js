@@ -12,6 +12,7 @@ const {
   getCurrentUser,
 } = require('./utils/users');
 const { connectDB } = require('./config/db');
+const cors = require('cors');
 
 dotenv.config({ path: './config/.env' });
 
@@ -21,6 +22,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 app.use(bodyParser.json());
+app.use(cors());
 
 // initialize mongoDB
 const client = connectDB();
@@ -65,7 +67,7 @@ io.on('connection', (socket) => {
   // Runs when client sends a message
   socket.on('chatMessage', async (msg) => {
     // Msg contains data emitted from client
-    const { username, room, text } = msg ? msg : {};
+    const { username, room, text } = msg ? msg : { username: '', text: '' };
 
     try {
       // Insert message to MongoDB
