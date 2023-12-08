@@ -11,6 +11,7 @@ const { username, room } = Qs.parse(location.search, {
   allowDots: true,
 });
 
+// Username and room from the query string
 console.log(username, room);
 
 const socket = io();
@@ -21,8 +22,18 @@ socket.emit('joinRoom', { username, room });
 // Join chatroom (this message will be in the browser's console too)
 // Message from server
 socket.on('message', (message) => {
+  console.log(message);
   outputMessage(message);
 
+  // Scroll down
+  const objDiv = document.querySelector('.chat-messages');
+  objDiv.scrollTop = objDiv.scrollHeight;
+});
+
+// Messages from server
+socket.on('messages', (messages) => {
+  console.log(messages);
+  messages.forEach((message) => outputMessage(message));
   // Scroll down
   const objDiv = document.querySelector('.chat-messages');
   objDiv.scrollTop = objDiv.scrollHeight;

@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -13,6 +14,7 @@ const {
 } = require('./utils/users');
 const { connectDB } = require('./config/db');
 const cors = require('cors');
+const { fetchMessages, insertMessage } = require('./utils/data');
 
 dotenv.config({ path: './config/.env' });
 
@@ -39,6 +41,9 @@ io.on('connection', (socket) => {
   // Join chatroom
   socket.on('joinRoom', ({ username, room }) => {
     const user = userJoin(socket.id, username, room);
+
+    // Call the async function
+    fetchMessages(client, socket, room);
 
     // Join room
     socket.join(user.room);
@@ -69,23 +74,20 @@ io.on('connection', (socket) => {
     // Msg contains data emitted from client
     const { username, room, text } = msg ? msg : { username: '', text: '' };
 
-    try {
+    /*     try {
       // Insert message to MongoDB
-      /*       await messagesCollection.insertOne({
-        username,
-        room,
-        text,
-        createdAt: new Date(),
-      }); */
       (await client).collection('messages').insertOne({
         username,
         room,
         text,
-        createdAt: new Date(),
+        time: moment().format('h:mm a'),
       });
     } catch (error) {
       console.error(error);
-    }
+    } */
+
+    // Insert message to MongoDB
+    insertMessage(client, username, room, text);
 
     const user = getCurrentUser(socket.id);
     io.to(user.room).emit('message', formatMessage(msg?.username, msg?.text));
