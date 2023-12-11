@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 dotenv.config({ path: path.resolve(__dirname, '../config/.env') });
+console.log('db', __dirname);
 
 const dbUrl = process.env.MONGO_URI;
 

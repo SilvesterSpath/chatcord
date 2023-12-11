@@ -17,6 +17,7 @@ const cors = require('cors');
 const { fetchMessages, insertMessage } = require('./utils/data');
 
 dotenv.config({ path: './config/.env' });
+console.log(__dirname);
 
 // Initialize
 const app = express();
