@@ -17,7 +17,6 @@ const cors = require('cors');
 const { fetchMessages, insertMessage } = require('./utils/data');
 
 dotenv.config({ path: './config/.env' });
-console.log(__dirname);
 
 // Initialize
 const app = express();
@@ -74,18 +73,6 @@ io.on('connection', (socket) => {
   socket.on('chatMessage', async (msg) => {
     // Msg contains data emitted from client
     const { username, room, text } = msg ? msg : { username: '', text: '' };
-
-    /*     try {
-      // Insert message to MongoDB
-      (await client).collection('messages').insertOne({
-        username,
-        room,
-        text,
-        time: moment().format('h:mm a'),
-      });
-    } catch (error) {
-      console.error(error);
-    } */
 
     // Insert message to MongoDB
     insertMessage(client, username, room, text);

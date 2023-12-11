@@ -78,6 +78,16 @@ function outputMessage(message) {
   p2.classList.add('text');
   p2.innerText = message.text;
   div.appendChild(p2);
+
+  // Create delete button
+  const deleteBtn = document.createElement('button');
+  deleteBtn.classList.add('delete');
+  deleteBtn.innerText = 'Delete';
+  deleteBtn.addEventListener('click', () => {
+    div.remove();
+  });
+
+  div.appendChild(deleteBtn);
   document.querySelector('.chat-messages').appendChild(div);
 }
 
