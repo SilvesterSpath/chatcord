@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { ObjectId } = require('mongodb');
 
 // Retrieving data from database
 const fetchMessages = async (client, socket, room) => {
@@ -31,7 +32,27 @@ const insertMessage = async (client, username, room, text) => {
   }
 };
 
+// Deleting an entry
+const deleteMessage = async (client, id) => {
+  const objectId = new ObjectId(id);
+  const result = await (await client)
+    .collection('messages')
+    .findOne({ _id: objectId });
+
+  if (result) {
+    try {
+      // Delete message from MongoDB
+      await (await client).collection('messages').deleteOne({ _id: objectId });
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    console.error('Message not found');
+  }
+};
+
 module.exports = {
   fetchMessages,
   insertMessage,
+  deleteMessage,
 };

@@ -22,7 +22,6 @@ socket.emit('joinRoom', { username, room });
 // Join chatroom (this message will be in the browser's console too)
 // Message from server
 socket.on('message', (message) => {
-  console.log(message);
   outputMessage(message);
 
   // Scroll down
@@ -81,10 +80,21 @@ function outputMessage(message) {
 
   // Create delete button
   const deleteBtn = document.createElement('button');
+
   deleteBtn.classList.add('delete');
   deleteBtn.innerText = 'X';
+  deleteBtn.dataset.id = message._id;
   deleteBtn.addEventListener('click', () => {
-    div.remove();
+    fetch('/messages/' + deleteBtn.dataset.id, {
+      method: 'DELETE',
+    })
+      .then((res) => {
+        socket.emit('deleteMessage', deleteBtn.dataset.id); // Notify server
+        div.remove();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   });
 
   div.appendChild(deleteBtn);

@@ -14,7 +14,7 @@ const {
 } = require('./utils/users');
 const { connectDB } = require('./config/db');
 const cors = require('cors');
-const { fetchMessages, insertMessage } = require('./utils/data');
+const { fetchMessages, insertMessage, deleteMessage } = require('./utils/data');
 
 dotenv.config({ path: './config/.env' });
 
@@ -79,6 +79,10 @@ io.on('connection', (socket) => {
 
     const user = getCurrentUser(socket.id);
     io.to(user.room).emit('message', formatMessage(msg?.username, msg?.text));
+  });
+
+  socket.on('deleteMessage', async (id) => {
+    deleteMessage(client, id);
   });
 
   // Runs when client disconnects
