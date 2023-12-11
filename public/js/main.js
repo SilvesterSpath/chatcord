@@ -85,16 +85,15 @@ function outputMessage(message) {
   deleteBtn.innerText = 'X';
   deleteBtn.dataset.id = message._id;
   deleteBtn.addEventListener('click', () => {
-    fetch('/messages/' + deleteBtn.dataset.id, {
-      method: 'DELETE',
-    })
-      .then((res) => {
-        socket.emit('deleteMessage', deleteBtn.dataset.id); // Notify server
-        div.remove();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const _id = deleteBtn.dataset.id;
+    const confirm = window.confirm(
+      'Are you sure you want to delete this message?'
+    );
+    // Emit delete event
+    socket.emit('deleteMessage', _id);
+
+    // Remove message from DOM
+    div.remove();
   });
 
   div.appendChild(deleteBtn);
