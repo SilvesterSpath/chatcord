@@ -82,7 +82,7 @@ function outputMessage(message) {
   // Create delete button
   const deleteBtn = document.createElement('button');
   deleteBtn.classList.add('delete');
-  deleteBtn.innerText = 'Delete';
+  deleteBtn.innerText = 'X';
   deleteBtn.addEventListener('click', () => {
     div.remove();
   });
