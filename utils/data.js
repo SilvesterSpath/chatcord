@@ -1,6 +1,13 @@
 const moment = require('moment');
 const { ObjectId } = require('mongodb');
 
+// Function to validate ObjectId format
+const isValidObjectId = (id) => {
+  // Validate id here based on the expected format
+  // For example, you can check if it's a valid 24-character hex string
+  return /^[0-9a-fA-F]{24}$/.test(id);
+};
+
 // Retrieving data from database
 const fetchMessages = async (client, socket, room) => {
   try {
@@ -34,6 +41,11 @@ const insertMessage = async (client, username, room, text) => {
 
 // Deleting an entry
 const deleteMessage = async (client, id) => {
+  // Validate id before creating ObjectId
+  if (!isValidObjectId(id)) {
+    console.error('Invalid ObjectId format');
+    return;
+  }
   const objectId = new ObjectId(id);
   const result = await (await client)
     .collection('messages')
