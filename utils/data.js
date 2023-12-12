@@ -28,12 +28,16 @@ const fetchMessages = async (client, socket, room) => {
 const insertMessage = async (client, username, room, text) => {
   try {
     // Insert message to MongoDB
-    await (await client).collection('messages').insertOne({
+    const result = await (await client).collection('messages').insertOne({
       username,
       room,
       text,
       time: moment().format('YYYY-MM-DD h:mm a'),
     });
+    // Retrieve the ObjectId of the newly inserted document
+    const insertedId = result.insertedId;
+    console.log('Message inserted with ObjectId:', insertedId);
+    return insertedId;
   } catch (error) {
     console.error(error);
   }
@@ -42,24 +46,29 @@ const insertMessage = async (client, username, room, text) => {
 // Deleting an entry
 const deleteMessage = async (client, id) => {
   // Validate id before creating ObjectId
-  if (!isValidObjectId(id)) {
+  console.log('data side', await id);
+  if (!isValidObjectId(await id)) {
     console.error('Invalid ObjectId format');
     return;
-  }
-  const objectId = new ObjectId(id);
-  const result = await (await client)
-    .collection('messages')
-    .findOne({ _id: objectId });
-
-  if (result) {
-    try {
-      // Delete message from MongoDB
-      await (await client).collection('messages').deleteOne({ _id: objectId });
-    } catch (error) {
-      console.error(error);
-    }
   } else {
-    console.error('Message not found');
+    const objectId = new ObjectId(await id);
+    const result = await (await client)
+      .collection('messages')
+      .findOne({ _id: objectId });
+
+    if (result) {
+      try {
+        // Delete message from MongoDB
+        await (await client)
+          .collection('messages')
+          .deleteOne({ _id: objectId });
+        console.log('Message deleted', objectId);
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.error('Message not found');
+    }
   }
 };
 

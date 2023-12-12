@@ -16,6 +16,9 @@ console.log(username, room);
 
 const socket = io();
 
+// Global variable
+let lastInsertedId;
+
 // Join chatroom
 socket.emit('joinRoom', { username, room });
 
@@ -64,6 +67,20 @@ chatForm.addEventListener('submit', (e) => {
   e.target.elements.msg.focus();
 });
 
+// Last inserted id global variable
+socket.on('insertedId', (id) => {
+  lastInsertedId = id;
+  console.log('lastInsertedId', id);
+});
+
+// Remove deleted id from global variable
+socket.on('deletedId', (id) => {
+  console.log('deletedId', id);
+  if (lastInsertedId === id) {
+    lastInsertedId = null;
+  }
+});
+
 // Output message to DOM
 function outputMessage(message) {
   const div = document.createElement('div');
@@ -84,16 +101,21 @@ function outputMessage(message) {
   deleteBtn.classList.add('delete');
   deleteBtn.innerText = 'X';
   deleteBtn.dataset.id = message._id;
-  deleteBtn.addEventListener('click', () => {
-    const _id = deleteBtn.dataset.id;
-    const confirm = window.confirm(
+  deleteBtn.addEventListener('click', async () => {
+    const _id = await deleteBtn.dataset.id;
+    console.log('client side_', _id);
+    const confirm = await window.confirm(
       'Are you sure you want to delete this message?'
     );
-    // Emit delete event
-    socket.emit('deleteMessage', _id);
+    if (confirm) {
+      // Emit delete event
+      socket.emit('deleteMessage', lastInsertedId ? lastInsertedId : _id);
 
-    // Remove message from DOM
-    div.remove();
+      // Remove message from DOM
+      div.remove();
+    } else {
+      return;
+    }
   });
 
   div.appendChild(deleteBtn);

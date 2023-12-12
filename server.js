@@ -75,14 +75,16 @@ io.on('connection', (socket) => {
     const { username, room, text } = msg ? msg : { username: '', text: '' };
 
     // Insert message to MongoDB
-    insertMessage(client, username, room, text);
+    const lastInsertedId = await insertMessage(client, username, room, text);
+    socket.emit('insertedId', lastInsertedId);
 
     const user = getCurrentUser(socket.id);
-    io.to(user.room).emit('message', formatMessage(msg?.username, msg?.text));
+    io.to(user?.room).emit('message', formatMessage(msg?.username, msg?.text));
   });
 
-  socket.on('deleteMessage', async (id) => {
+  socket.on('deleteMessage', (id) => {
     deleteMessage(client, id);
+    socket.emit('deletedId', id);
   });
 
   // Runs when client disconnects
